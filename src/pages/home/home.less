@@ -1,0 +1,31 @@
+.application {
+	.wh(inherit,100%);
+	ul {
+		margin-top: 20px;
+		 .wh(100%,100%);
+		li {
+			float:left;
+			text-align: center;
+			margin-bottom: 20px;
+			.wh(25%,100%);
+			a {
+				.wh(64px,64px);
+				.in-block;
+				img {
+					.wh(64px,64px);
+				}
+			}
+			span {
+				float:right;
+				.wh(100%,20px);
+				.sc(14px,#000);
+				.in-block;
+			}
+		}
+	}
+	& ul:after {
+	    content: '';
+	    display: block;
+	    clear: both;
+	}
+}
