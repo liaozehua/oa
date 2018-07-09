@@ -1,5 +1,6 @@
 <template lang="html">
-    <div class="yo-scroll" :class="{'down':(state===0),'up':(state==1),refresh:(state===2),touch:touching}" @touchstart="touchStart($event)" @touchmove="touchMove($event)" @touchend="touchEnd($event)">
+    <div class="yo-scroll" :class="{'down':(state===0),'up':(state==1),'refresh':(state===2),'touch':touching}" @touchstart="touchStart($event)" @touchmove="touchMove($event)" @touchend="touchEnd($event)">
+        <span>{{dataList}}{{offset}}{{enableInfinite}}{{enableRefresh}}</span>
         <section :style="{ transform: 'translate3d(0, ' + top + 'px, 0)' }" class="inner" >
             <header class="pull-refresh">
                 <slot name="pull-refresh">
@@ -64,20 +65,25 @@
         },
         methods: {
             touchStart(e) {
+                
                 this.startY = e.targetTouches[0].pageY;
                 this.startX = e.targetTouches[0].pageX;
                 this.startScroll = this.$el.scrollTop || 0;
-                this.touching = true; //留着有用，不能删除
+                this.touching = true; //留着有clientX用，不能删除
                 this.dataList.noFlag = false;
                 this.$el.querySelector('.load-more').style.display = 'block';
             },
             touchMove(e) {
-                if(!this.enableRefresh || this.dataList.noFlag || !this.touching) {
-                    return
-                }
+                // if(!this.enableRefresh || this.dataList.noFlag || !this.touching) {
+                //     return
+                // }
+    
                 let diff = e.targetTouches[0].pageY - this.startY - this.startScroll
-                if(diff > 0) e.preventDefault()
-                this.top = Math.pow(diff, 0.8) + (this.state === 2 ? this.offset : 0)
+                if(diff > 0) e.preventDefault();
+                //向上拉 diff < 0,this.top 为 NAN,  向下拉 diff > 0, this.top为有有效值
+                this.top = Math.pow(diff, 0.8) + (this.state === 2 ? this.offset : 0);
+                // console.log(Math.pow(diff, 0.8));
+                // console.log(this.top);
                 if(this.state === 2) { // in refreshing
                     return
                 }
@@ -87,7 +93,9 @@
                     this.state = 0
                 }
                 let more = this.$el.querySelector('.load-more');
+                //this.top 为 true时是向上拉
                 if(!this.top && this.state === 0) {
+                    // console.log(1)
                     more.style.display = 'block';
                 } else {
                     more.style.display = 'none';
@@ -97,6 +105,7 @@
                 if(!this.enableRefresh) {
                     return
                 }
+                console.log(e);
                 this.touching = false
                 if(this.state === 2) { // in refreshing
                     this.state = 2
@@ -141,9 +150,12 @@
                 this.state = 2;
                 this.top = this.offset;
                 setTimeout(() => {
+                    //把函数refreshDone 当作参数传给 父组件的onReFresh函数
                     this.onRefresh(this.refreshDone)
+
                 }, 300);
             },
+            // 重新定位
             refreshDone() {
                 this.state = 0
                 this.top = 0

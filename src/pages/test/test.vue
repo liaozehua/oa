@@ -42,18 +42,17 @@
                 }
                 this.listdata = response.slice(0, this.num);
             },
-            //上啦刷新
+            //下拉刷新
             onRefresh(done) {
                 this.getList();
                 done(); // call done
             },
-            //下拉加载
+            //上拉加载
             onInfinite(done) {
                 this.counter++;
                 let end = this.pageEnd = this.num * this.counter;
                 let i = this.pageStart = this.pageEnd - this.num;
                 let more = this.$el.querySelector('.load-more')
-                debugger;
                 for(i; i < end; i++) {
                     if(i >= 30) {
                         more.style.display = 'none'; //隐藏加载条
@@ -67,7 +66,6 @@
                         more.style.display = 'none'; //隐藏加载条
                     }
                 }
-                debugger;
                 done();
             }
         }
